@@ -1,0 +1,44 @@
+name: Insights
+
+# Daily NEPSE Insights blogs: auto-fetch.js builds them from the closing data,
+# batch-post-blogs.js publishes them to /blog-v2.
+#
+# 10:00 UTC = 15:45 NPT, after the 15:00 close. auto-fetch.js exits without
+# writing anything when there was no session today (holiday) or the market is
+# still open, and batch-post-blogs.js skips titles already published, so an
+# extra or repeated run posts nothing twice.
+on:
+  schedule:
+    - cron: '0 10 * * 0-5'
+  workflow_dispatch:
+
+concurrency:
+  group: insights
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build today's blogs
+        run: node auto-fetch.js
+
+      - name: Publish
+        if: hashFiles('blogs-to-post.json') != ''
+        env:
+          NEPSE_EMAIL: ${{ secrets.NEPSE_EMAIL }}
+          NEPSE_PASSWORD: ${{ secrets.NEPSE_PASSWORD }}
+        run: node batch-post-blogs.js

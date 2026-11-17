@@ -1,0 +1,11 @@
+# Secrets: NEPSE_EMAIL / NEPSE_PASSWORD or BLOG_JWT come from env vars in CI.
+.jwt
+.env
+.env.*
+
+# Run output, regenerated every run
+blogs-to-post.json
+macd-test.json
+logs/
+
+node_modules/
