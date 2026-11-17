@@ -3,13 +3,13 @@ name: Insights
 # Daily NEPSE Insights blogs: auto-fetch.js builds them from the closing data,
 # batch-post-blogs.js publishes them to /blog-v2.
 #
-# 10:00 UTC = 15:45 NPT, after the 15:00 close. auto-fetch.js exits without
+# 09:45 UTC = 15:30 NPT, after the 15:00 close. auto-fetch.js exits without
 # writing anything when there was no session today (holiday) or the market is
 # still open, and batch-post-blogs.js skips titles already published, so an
 # extra or repeated run posts nothing twice.
 on:
   schedule:
-    - cron: '0 10 * * 0-5'
+    - cron: '45 9 * * 0-5'
   workflow_dispatch:
 
 concurrency:
